@@ -46,7 +46,7 @@ public class ActivityMain extends AppCompatActivity {
 
         configureWebView();
 
-        webView.loadUrl("file:///android_asset/examineWebViewInterface/index.html");
+        webView.loadUrl("file:///android_asset/ExamineWebViewInterface-web/index.html");
     }
 
     @Override

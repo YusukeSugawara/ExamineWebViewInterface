@@ -1,0 +1,3 @@
+[submodule "app/src/main/assets/ExamineWebViewInterface-web"]
+	path = app/src/main/assets/ExamineWebViewInterface-web
+	url = https://github.com/YusukeSugawara/ExamineWebViewInterface-web.git
