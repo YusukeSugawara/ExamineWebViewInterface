@@ -15,34 +15,52 @@ This study project compares Native/JS interfaces on cross-platfrom WebViews from
 
 ### Interface Design Patterns
 
-#### Custom URL scheme
+#### raw-webview-api
 
-* When callback from JS to Native, loads a dummy URL having own URL scheme, event name, and parameters.
+##### Android
 
-##### Native --> JS 
+* If call to JS from Java:
+    1. Java evaluates JavaScript code directly with [WebView.evaluateJavascript(script, resultCallback)](https://goo.gl/DCbxP8).
+    2. JS can receive it as a normally function calling.
 
-When call JS methods from Native:
+* If callback to Java from JS:
+    1. In advance, Java registers a [WebViewClient](https://developer.android.com/reference/android/webkit/WebViewClient.html) to WebView.
+    2. JS sets `{customURLScheme}://{eventName}/?{parameters}` to `location.href`.
+        * The `{customURLScheme}://` is the marker to classify a loading event as a callback.
+        * The `/?` part separates `{eventName}` and `{parameters}`.
+        If there is one event type only and JS don't need to think about event types, simply putting `{parameters}` part is also OK.
+    3. Java can receive it as a URL loading event which can listen with [WebViewClient.shouldOverrideUrlLoading(view, url)](https://goo.gl/K16Yq8).
 
-1. Native evaluates JavaScript code.
-    * **Android:**
-    [WebView.evaluateJavascript(script, resultCallback)](https://goo.gl/DCbxP8)
-    * **iOS:** *under examination*
-    [WKWebView.evaluateJavaScript(_:completionHandler:)](https://developer.apple.com/documentation/webkit/wkwebview/1415017-evaluatejavascript)
-2. Native receives the calling directly, handles it.
+###### WARNING
+
+I recommend we **don't use** [WebView.addJavascriptInterface(Object object, String name)](https://goo.gl/uskdfy).
+It ables to call Java method from JS directly, but [this pattern is an ex‐convict](https://stackoverflow.com/questions/6415882/android-javascriptinterface-security).  So it can bring unknown security risks.
 
 
-##### JS --> Native
+##### iOS
 
-When notify event having some parameters from JS to Native:
+* If call to JS from Swift:
+    1. Swift evaluates JavaScript code directly with [WKWebView.evaluateJavaScript(_:completionHandler:)](https://developer.apple.com/documentation/webkit/wkwebview/1415017-evaluatejavascript).
+    2. JS can receive it as a normally function calling.
 
-1. JS sets `{customURLScheme}://{eventName}/?{parameters}` to `location.href`.
-2. Native hooks the loading request event, checks whether or not url format has custom URL scheme(`{customURLScheme}://`).
-    * **Android:**
-    [WebViewClient.shouldOverrideUrlLoading(view, url)](https://goo.gl/K16Yq8)
-    * **iOS:** *under examination*
-    [WKNavigationDelegate.webView:decidePolicyForNavigationAction:decisionHandler:](https://developer.apple.com/documentation/webkit/wknavigationdelegate/1455641-webview?language=objc)
+* If callback to Swift from JS:
+    1. In advance, Swift registers a [WKWebViewConfiguration](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration) to WKWebView by using [init(frame:configuration:)](https://developer.apple.com/documentation/webkit/wkwebview/1414998-init).
+    Then sets [WKUserContentController](https://developer.apple.com/documentation/webkit/wkusercontentcontroller) which added [WKScriptMessageHandler](https://developer.apple.com/documentation/webkit/wkscriptmessagehandler) by [WKUserContentController.add(_:name:)](https://developer.apple.com/documentation/webkit/wkusercontentcontroller/1537172-add).
+    ```swift
+    import Webkit
+
+    let CALLBACK_HANDLER_NAME = "callbackHandler"
+
+    let configuration = WKWebViewConfiguration()
+    let userContentController = WKUserContentController()
+    userContentController.add(self, name: CALLBACK_HANDLER_NAME)
+    configuration.userContentController = userContentController
     
-3. If is true, Native parses `eventName` and `parameters`, handles it.
+    let webView = WKWebView(frame: self.view.bounds, configuration: configuration)
+    ```
+
+    2. JS calls `webkit.messageHandlers.callbackHandler.postMessage(object)`.
+    3. Swift can receive it as a message event which can listen with [WKScriptMessageHandler.userContentController(_:didReceive:)](https://developer.apple.com/documentation/webkit/wkscriptmessagehandler/1396222-usercontentcontroller).
 
 
 #### [Apache Cordova](https://cordova.apache.org/)
