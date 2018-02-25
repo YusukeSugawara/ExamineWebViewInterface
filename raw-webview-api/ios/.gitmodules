@@ -1,0 +1,3 @@
+[submodule "ExamineWebViewInterface-ios/ExamineWebViewInterface-web"]
+	path = ExamineWebViewInterface-ios/ExamineWebViewInterface-web
+	url = https://github.com/YusukeSugawara/ExamineWebViewInterface-web.git
