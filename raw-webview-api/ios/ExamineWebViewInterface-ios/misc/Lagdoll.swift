@@ -2,9 +2,6 @@
 //  Lagdoll.swift
 //  ExamineWebViewInterface-ios
 //
-//  Created by Links on 2018/02/25.
-//  Copyright © 2018年 Yusuke Sugawara. All rights reserved.
-//
 
 import Foundation
 
