@@ -1,0 +1,6 @@
+[submodule "raw-webview-api/android/app/src/main/assets/ExamineWebViewInterface-web"]
+	path = raw-webview-api/android/app/src/main/assets/ExamineWebViewInterface-web
+	url = https://github.com/YusukeSugawara/ExamineWebViewInterface-web.git
+[submodule "raw-webview-api/ios/ExamineWebViewInterface-ios/ExamineWebViewInterface-web"]
+	path = raw-webview-api/ios/ExamineWebViewInterface-ios/ExamineWebViewInterface-web
+	url = https://github.com/YusukeSugawara/ExamineWebViewInterface-web.git
